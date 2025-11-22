@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#4f46e5">
+    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/2997/2997235.png">
+    
+    <title>Admin Guru SMK N 8 Purworejo</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Great+Vibes&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Outfit', sans-serif; overflow-x: hidden; }
+
+        /* GRADIENT BACKGROUND */
+        .living-bg {
+            background: linear-gradient(-45deg, #ff9a9e, #fad0c4, #fad0c4, #a18cd1, #fbc2eb);
+            background-size: 400% 400%;
+            animation: gradientFlow 15s ease infinite;
+        }
+        .dark .living-bg {
+            background: linear-gradient(-45deg, #0f2027, #203a43, #2c5364, #1a1a2e);
+            background-size: 400% 400%;
+        }
+        @keyframes gradientFlow { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
+        /* GLASSMORPHISM */
+        .glass {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+        }
+        .dark .glass {
+            background: rgba(15, 23, 42, 0.65);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* ANIMATIONS */
+        .btn-anim { transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .btn-anim:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 10px 20px -5px rgba(0,0,0,0.2); }
+        .btn-anim:active { transform: scale(0.95); }
+
+        /* MUSIC BARS */
+        .bar { width: 4px; background: currentColor; border-radius: 2px; animation: dance 1s infinite; }
+        .bar:nth-child(2) { animation-delay: 0.2s; }
+        .bar:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes dance { 0%, 100% { height: 5px; } 50% { height: 20px; } }
+        .paused .bar { animation-play-state: paused; height: 4px; }
+
+        /* INPUT FILE HIDDEN */
+        .file-area { position: relative; overflow: hidden; }
+        .file-area input { position: absolute; left: 0; top: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; }
+
+        .slide-up { animation: slideUp 0.7s ease-out forwards; opacity: 0; transform: translateY(30px); }
+        @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="min-h-screen text-slate-800 dark:text-slate-100 living-bg transition-colors duration-500">
+
+    <script id="app-config">
+        window.APP_DATA = {
+            schoolName: "SMK N 8 Purworejo",
+            adminPass: "admin123",
+            links: { 
+                folder: "", 
+                kaldik: "", prota: "", prosem: "", atp: "", 
+                modul: "", kktp: "", nilai: "", jurnal: "" 
+            },
+            // PLAYLIST BARU (STABIL & SANTAI)
+            playlist: [
+                { title: "Relaxing Piano", url: "https://cdn.pixabay.com/download/audio/2022/03/24/audio_c8c8a73467.mp3" },
+                { title: "Soft Ambient", url: "https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3" },
+                { title: "Acoustic Breeze", url: "https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3" },
+                { title: "Focus Study", url: "https://cdn.pixabay.com/download/audio/2022/02/07/audio_686e970223.mp3" }
+            ]
+        };
+    </script>
+
+    <nav class="fixed top-0 w-full z-50 px-4 py-4">
+        <div class="glass max-w-7xl mx-auto rounded-2xl px-6 py-3 flex justify-between items-center shadow-lg">
+            <div class="flex items-center gap-4">
+                <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-blue-600 to-purple-600 text-white flex items-center justify-center text-xl shadow-lg animate-[pulse_3s_infinite]">
+                    <i class="fa-solid fa-school"></i>
+                </div>
+                <div>
+                    <h1 class="font-extrabold text-lg leading-none text-slate-900 dark:text-white" id="display-school-name">SMK N 8 Purworejo</h1>
+                    <p class="text-[10px] font-bold text-blue-600 dark:text-blue-300 uppercase tracking-widest mt-0.5">Administrasi Guru 2025</p>
+                </div>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="toggleTheme()" class="w-9 h-9 rounded-full bg-white/50 dark:bg-slate-800 flex items-center justify-center hover:bg-white transition"><i class="fa-solid fa-circle-half-stroke"></i></button>
+                <button onclick="openAdminModal()" class="btn-anim bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-5 py-2 rounded-full text-xs font-bold shadow-md flex items-center gap-2">
+                    <i class="fa-solid fa-gear"></i> Admin
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="pt-28 pb-32 px-4 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+        <div class="lg:col-span-4 space-y-6">
+            
+            <div class="glass p-6 rounded-3xl slide-up">
+                <div class="flex items-center gap-3 mb-6 border-b border-slate-200/50 dark:border-slate-700 pb-3">
+                    <div class="bg-blue-100 dark:bg-blue-900 p-2 rounded-lg text-blue-600 dark:text-blue-300">
+                        <i class="fa-solid fa-user-check"></i>
+                    </div>
+                    <h3 class="font-bold text-lg">Identitas Guru</h3>
+                </div>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400 ml-1">Nama Lengkap</label>
+                        <input type="text" id="teacher-name" class="w-full bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl p-3 font-bold focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="Nama & Gelar">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400 ml-1">Mata Pelajaran</label>
+                        <input type="text" id="teacher-subject" class="w-full bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="Ketik Mapel...">
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400 ml-1">Tahun Ajaran</label>
+                            <input type="text" id="teacher-year" class="w-full bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-sm text-center font-bold focus:ring-2 focus:ring-blue-500 outline-none" placeholder="2025/2026">
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400 ml-1">Semester</label>
+                            <select id="teacher-sem" class="w-full bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none cursor-pointer dark:text-white">
+                                <option>Ganjil</option>
+                                <option>Genap</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass p-6 rounded-3xl bg-slate-900 dark:bg-black text-white border-none slide-up relative overflow-hidden shadow-2xl" style="animation-delay: 0.1s;">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500 rounded-full blur-[50px] opacity-30 animate-pulse"></div>
+                
+                <div class="relative z-10">
+                    <div class="flex justify-between items-end mb-3">
+                        <h3 class="font-bold text-lg">Status Validasi</h3>
+                        <span id="progress-percent" class="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-300">0%</span>
+                    </div>
+                    <div class="w-full bg-slate-800 rounded-full h-3 mb-6 overflow-hidden">
+                        <div id="progress-bar" class="bg-gradient-to-r from-blue-500 to-purple-500 h-full rounded-full transition-all duration-1000 w-0 shadow-[0_0_10px_rgba(99,102,241,0.5)]"></div>
+                    </div>
+                    <button id="btn-cert-trigger" onclick="openCertDataModal()" disabled class="w-full py-3.5 rounded-xl bg-slate-800 text-slate-500 font-bold text-sm transition flex items-center justify-center gap-2 border border-slate-700 cursor-not-allowed group">
+                        <i class="fa-solid fa-lock group-hover:shake"></i> <span>Lengkapi 8 Dokumen</span>
+                    </button>
+                </div>
+            </div>
+
+            <a id="btn-main-folder" href="#" target="_blank" onclick="checkDriveLink(event)" class="btn-anim glass p-5 rounded-3xl slide-up flex items-center justify-between group cursor-pointer" style="animation-delay: 0.2s;">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-2xl bg-white dark:bg-slate-800 flex items-center justify-center text-green-600 shadow-md group-hover:scale-110 transition">
+                        <i class="fa-brands fa-google-drive text-2xl"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-sm text-slate-800 dark:text-white">Folder Drive Sekolah</h4>
+                        <p id="drive-status-text" class="text-[10px] text-slate-500">Klik untuk membuka penyimpanan</p>
+                    </div>
+                </div>
+                <div id="drive-arrow" class="w-8 h-8 rounded-full border border-slate-300 dark:border-slate-600 flex items-center justify-center group-hover:bg-green-600 group-hover:text-white group-hover:border-green-600 transition">
+                    <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>
+                </div>
+            </a>
+
+        </div>
+
+        <div class="lg:col-span-8 space-y-6 slide-up" style="animation-delay: 0.2s;">
+            <div class="glass px-6 py-4 rounded-2xl flex justify-between items-center shadow-sm">
+                <h2 class="font-bold text-lg text-slate-800 dark:text-white flex items-center gap-2">
+                    <i class="fa-solid fa-folder-tree text-blue-500"></i> 8 Dokumen Wajib
+                </h2>
+                <span class="text-[10px] font-bold bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 px-3 py-1 rounded-full">
+                    Auto-Direct Download
+                </span>
+            </div>
+
+            <div id="document-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-5 pb-24">
+                </div>
+        </div>
+
+    </main>
+
+    <div class="fixed bottom-6 right-6 z-40 slide-up" style="animation-delay: 0.5s;">
+        <div class="glass p-1.5 pr-6 rounded-full flex items-center gap-4 shadow-2xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-white/20 transition hover:scale-105">
+            <button onclick="toggleMusic()" id="play-btn" class="w-12 h-12 rounded-full bg-gradient-to-br from-pink-500 to-rose-500 text-white flex items-center justify-center shadow-lg hover:rotate-12 transition duration-300">
+                <i class="fa-solid fa-play ml-1"></i>
+            </button>
+            <div class="flex flex-col mr-2">
+                <span id="song-title" class="text-xs font-bold w-28 truncate text-slate-800 dark:text-white">Music Off</span>
+                <span class="text-[9px] text-slate-500 flex items-center gap-1 uppercase tracking-wider font-bold">Relaxing</span>
+            </div>
+            <div class="flex gap-3 text-sm">
+                <button onclick="prevSong()" class="text-slate-400 hover:text-pink-500"><i class="fa-solid fa-backward-step"></i></button>
+                <button onclick="nextSong()" class="text-slate-400 hover:text-pink-500"><i class="fa-solid fa-forward-step"></i></button>
+            </div>
+            <div id="music-indicator" class="flex gap-1 items-end h-4 paused ml-2 text-pink-500"><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+        </div>
+    </div>
+
+    <div id="admin-modal" class="fixed inset-0 z-[120] hidden items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+        <div class="glass p-8 w-full max-w-md text-center rounded-3xl bg-white dark:bg-slate-900 shadow-2xl">
+            <h3 class="font-bold text-xl mb-6 dark:text-white">Login Admin</h3>
+            <input type="password" id="admin-pass-input" class="w-full bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 p-3 rounded-xl mb-4 text-center text-lg outline-none focus:border-blue-500 dark:text-white transition" placeholder="Password">
+            <button onclick="verifyAdmin()" class="btn-anim w-full bg-slate-900 dark:bg-white dark:text-slate-900 text-white py-3 rounded-xl font-bold mb-3">Masuk Dashboard</button>
+            <button onclick="closeModal('admin-modal')" class="text-slate-400 text-sm hover:text-slate-600">Batal</button>
+        </div>
+    </div>
+
+    <div id="admin-settings" class="fixed inset-0 z-[130] hidden items-center justify-center bg-slate-50 dark:bg-slate-900 overflow-y-auto">
+        <div class="max-w-4xl w-full p-8 min-h-screen sm:min-h-0">
+            <div class="flex justify-between items-center mb-8">
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-900 dark:text-white">⚙️ Konfigurasi Link Drive</h2>
+                    <p class="text-sm text-slate-500">Sistem akan otomatis membuat Link Download Langsung.</p>
+                </div>
+                <button onclick="closeModal('admin-settings')" class="w-10 h-10 rounded-full bg-white dark:bg-slate-800 shadow flex items-center justify-center hover:text-red-500"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div class="space-y-6">
+                <div class="p-5 bg-green-50 dark:bg-green-900/20 rounded-2xl shadow-sm border border-green-200 dark:border-green-700">
+                    <label class="lbl text-green-700 dark:text-green-300">Link Folder Drive Utama (Tempat Upload)</label>
+                    <input id="set-folder" class="inp mt-1 border-green-300 focus:border-green-500" placeholder="https://drive.google.com/drive/folders/...">
+                </div>
+                
+                <div class="p-5 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
+                    <label class="lbl mb-2">Nama Sekolah</label>
+                    <input id="set-school" class="inp border-blue-200 mb-4">
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div><label class="lbl">Link Kaldik</label><input id="set-kaldik" class="inp" placeholder="Paste Link File..."></div>
+                        <div><label class="lbl">Link Prota</label><input id="set-prota" class="inp" placeholder="Paste Link File..."></div>
+                        <div><label class="lbl">Link Prosem</label><input id="set-prosem" class="inp" placeholder="Paste Link File..."></div>
+                        <div><label class="lbl">Link CP/ATP</label><input id="set-atp" class="inp" placeholder="Paste Link File..."></div>
+                        <div><label class="lbl">Link Modul Ajar</label><input id="set-modul" class="inp" placeholder="Paste Link File..."></div>
+                        <div><label class="lbl">Link KKTP</label><input id="set-kktp" class="inp" placeholder="Paste Link File..."></div>
+                        <div><label class="lbl text-purple-600">Link Daftar Nilai</label><input id="set-nilai" class="inp border-purple-200" placeholder="Paste Link File..."></div>
+                        <div><label class="lbl text-purple-600">Link Jurnal Mengajar</label><input id="set-jurnal" class="inp border-purple-200" placeholder="Paste Link File..."></div>
+                    </div>
+                </div>
+
+                <button onclick="generateApp()" class="btn-anim w-full py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold rounded-xl shadow-xl flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-cloud-arrow-down"></i> SIMPAN & DOWNLOAD FILE MASTER
+                </button>
+            </div>
+        </div>
+    </div>
+    <style>.lbl{font-size:10px;font-weight:800;text-transform:uppercase;color:#64748b;display:block;margin-bottom:4px}.dark .lbl{color:#94a3b8}.inp{width:100%;padding:10px;border-radius:8px;border:1px solid #cbd5e1;font-size:13px;outline:none;background:#fff}.dark .inp{background:#1e293b;border-color:#334155;color:white}.inp:focus{border-color:#4f46e5;box-shadow:0 0 0 2px rgba(79,70,229,0.1)}</style>
+
+    <div id="cert-data-modal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+        <div class="glass bg-white dark:bg-slate-900 rounded-3xl w-full max-w-lg overflow-hidden animate-[float_5s_ease-in-out_infinite] shadow-2xl">
+            <div class="bg-slate-900 p-5 text-white flex justify-between items-center">
+                <h3 class="font-bold text-lg"><i class="fa-solid fa-certificate mr-2 text-yellow-400"></i>Data Sertifikat</h3>
+                <button onclick="closeModal('cert-data-modal')" class="hover:text-red-400"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-6 space-y-4">
+                <div><label class="lbl">NIP</label><input type="text" id="cert-nip" class="inp font-mono" placeholder="19xxxxxxxxxx"></div>
+                <div><label class="lbl">Nama Kepala Sekolah</label><input type="text" id="cert-kepsek" class="inp font-bold" placeholder="Nama Kepala Sekolah"></div>
+                <button onclick="generateCert()" class="btn-anim w-full bg-indigo-600 text-white py-4 rounded-xl font-bold shadow-lg mt-2">Cetak Sertifikat</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="cert-preview-modal" class="fixed inset-0 z-[110] hidden items-center justify-center bg-slate-900/95 p-4">
+        <div class="bg-white rounded-2xl w-full max-w-5xl flex flex-col max-h-[90vh]">
+            <div class="p-4 border-b flex justify-between items-center">
+                <h3 class="font-bold text-slate-700">Preview Sertifikat</h3>
+                <button onclick="closeModal('cert-preview-modal')" class="text-slate-400 hover:text-red-500 text-xl"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-4 bg-slate-100 flex-grow overflow-auto flex justify-center items-center">
+                <canvas id="cert-canvas" width="1000" height="700" class="shadow-2xl bg-white max-w-full h-auto"></canvas>
+            </div>
+            <div class="p-4 bg-white border-t flex justify-end">
+                <button onclick="downloadCertImage()" class="btn-anim px-8 py-3 bg-blue-600 text-white font-bold rounded-xl shadow-lg flex items-center gap-2"><i class="fa-solid fa-download"></i> Download PNG</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 1. DEFINISI INSTRUMEN
+        const items = [
+            { id: 'kaldik', name: 'Kalender Pendidikan', icon: 'fa-calendar-days', color: 'blue', desc: 'Jadwal Akademik' },
+            { id: 'prota', name: 'Program Tahunan', icon: 'fa-chart-pie', color: 'orange', desc: 'Distribusi Waktu' },
+            { id: 'prosem', name: 'Program Semester', icon: 'fa-chart-line', color: 'purple', desc: 'Rincian Pekan' },
+            { id: 'atp', name: 'Capaian & ATP', icon: 'fa-bullseye', color: 'pink', desc: 'Alur Tujuan' },
+            { id: 'modul', name: 'Modul Ajar / RPP', icon: 'fa-book-open', color: 'indigo', desc: 'Skenario Ajar' },
+            { id: 'kktp', name: 'KKTP / Asesmen', icon: 'fa-list-check', color: 'teal', desc: 'Kriteria Tuntas' },
+            { id: 'nilai', name: 'Daftar Nilai', icon: 'fa-marker', color: 'rose', desc: 'Format Penilaian' },
+            { id: 'jurnal', name: 'Jurnal Mengajar', icon: 'fa-book-open-reader', color: 'cyan', desc: 'Catatan Harian' }
+        ];
+
+        const checklist = {};
+        items.forEach(i => checklist[i.id] = false);
+
+        // 2. INIT & RENDER
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) document.documentElement.classList.add('dark');
+            renderConfig();
+            renderCards();
+            player.src = window.APP_DATA.playlist[0].url;
+        });
+
+        function toggleTheme() { document.documentElement.classList.toggle('dark'); }
+
+        function renderConfig() {
+            const c = window.APP_DATA;
+            document.getElementById('display-school-name').textContent = c.schoolName;
+            document.title = c.schoolName;
+            
+            // Validasi Link Folder Utama
+            const btnMain = document.getElementById('btn-main-folder');
+            const statusText = document.getElementById('drive-status-text');
+            
+            if(c.links.folder && c.links.folder.trim().length > 5) {
+                btnMain.href = c.links.folder;
+                btnMain.classList.remove('opacity-50', 'grayscale', 'cursor-not-allowed');
+                statusText.textContent = "Klik untuk membuka penyimpanan pusat";
+                statusText.classList.remove('text-red-500');
+            } else {
+                btnMain.removeAttribute('href');
+                btnMain.classList.add('opacity-50', 'grayscale', 'cursor-not-allowed');
+                statusText.textContent = "Link Belum Diatur Admin";
+                statusText.classList.add('text-red-500');
+            }
+        }
+
+        function checkDriveLink(e) {
+            const c = window.APP_DATA;
+            if(!c.links.folder || c.links.folder.trim() === "") {
+                e.preventDefault();
+                alert("Maaf, Admin belum mengatur Link Folder Drive Sekolah.");
+            }
+        }
+
+        // 3. CONVERT TO DIRECT DOWNLOAD LINK
+        function convertToDirectLink(url) {
+            if (!url) return "";
+            // Cek jika link Google Drive biasa
+            if (url.includes("drive.google.com") && url.includes("/d/")) {
+                // Ekstrak ID File
+                const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+                if (match && match[1]) {
+                    // Format Link Download Langsung
+                    return `https://docs.google.com/uc?export=download&id=${match[1]}`;
+                }
+            }
+            return url; // Kembalikan url asli jika bukan format google drive
+        }
+
+        function renderCards() {
+            const container = document.getElementById('document-grid');
+            const links = window.APP_DATA.links;
+            let html = '';
+
+            items.forEach(item => {
+                // Pakai logic konversi link disini saat render
+                let rawUrl = links[item.id];
+                let finalUrl = convertToDirectLink(rawUrl);
+                
+                const isChecked = checklist[item.id];
+                const cardBg = isChecked 
+                    ? 'bg-green-50/90 dark:bg-green-900/20 border-green-300 dark:border-green-800 shadow-md' 
+                    : 'bg-white/80 dark:bg-slate-800/80 border-white/50 dark:border-slate-700';
+                const iconBg = isChecked ? 'bg-green-100 text-green-600' : `bg-${item.color}-50 text-${item.color}-500 dark:bg-slate-700 dark:text-${item.color}-400`;
+                
+                const hasLink = finalUrl && finalUrl.trim() !== "";
+                const downloadClass = hasLink
+                    ? 'bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 text-blue-600 dark:text-blue-300 cursor-pointer' 
+                    : 'bg-slate-100 dark:bg-slate-800 text-slate-400 cursor-not-allowed opacity-70';
+                
+                const downloadAction = hasLink ? `href="${finalUrl}"` : 'onclick="alert(\'Link Template belum diisi oleh Admin.\')"';
+
+                html += `
+                <div class="card-hover glass p-5 rounded-2xl ${cardBg} flex flex-col justify-between h-full group relative overflow-hidden">
+                    <div class="flex justify-between items-start mb-4 relative z-10">
+                        <div class="flex gap-3">
+                            <div class="w-11 h-11 rounded-xl ${iconBg} flex items-center justify-center text-lg shadow-sm transition-colors">
+                                <i class="fa-solid ${item.icon}"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm text-slate-800 dark:text-slate-100">${item.name}</h4>
+                                <p class="text-[10px] text-slate-400 uppercase tracking-wide mt-0.5 font-bold">${item.desc}</p>
+                            </div>
+                        </div>
+                        ${isChecked ? '<div class="w-6 h-6 rounded-full bg-green-500 text-white flex items-center justify-center shadow animate-bounce"><i class="fa-solid fa-check text-xs"></i></div>' : ''}
+                    </div>
+
+                    <div class="flex gap-2 mt-2 relative z-10">
+                        <a ${downloadAction} class="flex-1 btn-anim ${downloadClass} text-[10px] font-bold py-2.5 rounded-xl text-center transition flex items-center justify-center gap-1">
+                            <i class="fa-solid fa-download"></i> Template
+                        </a>
+                        <div class="flex-1 file-area">
+                            <button class="btn-anim w-full bg-slate-800 dark:bg-slate-700 text-white text-[10px] font-bold py-2.5 rounded-xl hover:bg-black transition shadow-md flex items-center justify-center gap-1">
+                                <i class="fa-solid fa-cloud-arrow-up"></i> Upload
+                            </button>
+                            <input type="file" onchange="markComplete('${item.id}')">
+                        </div>
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        function markComplete(id) { checklist[id] = true; renderCards(); updateProgress(); }
+
+        function updateProgress() {
+            const checked = Object.values(checklist).filter(Boolean).length;
+            const percent = Math.round((checked / items.length) * 100);
+            document.getElementById('progress-bar').style.width = `${percent}%`;
+            document.getElementById('progress-percent').textContent = `${percent}%`;
+            const btn = document.getElementById('btn-cert-trigger');
+            if (percent === 100) {
+                btn.disabled = false;
+                btn.className = "w-full py-4 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold text-sm shadow-xl hover:scale-105 transition animate-pulse cursor-pointer border-0";
+                btn.innerHTML = `<i class="fa-solid fa-award mr-1"></i> Isi Data & Cetak Sertifikat`;
+                confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+            }
+        }
+
+        // 4. ADMIN LOGIC (WITH LINK PRESERVATION)
+        function openAdminModal() { document.getElementById('admin-modal').classList.remove('hidden'); document.getElementById('admin-modal').classList.add('flex'); }
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); document.getElementById(id).classList.remove('flex'); }
+        
+        function verifyAdmin() {
+            if(document.getElementById('admin-pass-input').value === window.APP_DATA.adminPass) {
+                closeModal('admin-modal');
+                document.getElementById('admin-settings').classList.remove('hidden');
+                document.getElementById('admin-settings').classList.add('flex');
+                
+                // POPULATE INPUTS
+                const c = window.APP_DATA;
+                document.getElementById('set-school').value = c.schoolName;
+                document.getElementById('set-folder').value = c.links.folder;
+                items.forEach(i => { if(document.getElementById(`set-${i.id}`)) document.getElementById(`set-${i.id}`).value = c.links[i.id] || ""; });
+            } else { alert("Password Salah!"); }
+        }
+
+        function generateApp() {
+            // 1. Collect all inputs
+            const newLinks = { folder: document.getElementById('set-folder').value };
+            items.forEach(i => { newLinks[i.id] = document.getElementById(`set-${i.id}`).value; });
+            
+            const newConfig = {
+                schoolName: document.getElementById('set-school').value,
+                adminPass: window.APP_DATA.adminPass,
+                links: newLinks,
+                playlist: window.APP_DATA.playlist
+            };
+            
+            // 2. Get Full HTML Source
+            let html = document.documentElement.outerHTML;
+            
+            // 3. Replace Config Section
+            const regex = /(<script id="app-config">)([\s\S]*?)(<\/script>)/;
+            const newScript = `\n        window.APP_DATA = ${JSON.stringify(newConfig, null, 4)};\n    `;
+            
+            // 4. Download File
+            const blob = new Blob([html.replace(regex, `$1${newScript}$3`)], {type: 'text/html'});
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `Admin_Guru_SMK8_MASTER.html`;
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
+            
+            alert("✅ File Master Berhasil Dibuat!\n\nLink sudah tersimpan di file baru yang terdownload.");
+        }
+
+        // 5. CERTIFICATE & MUSIC (Standard Logic)
+        let isPlaying=false, trackIdx=0; const player=new Audio();
+        function toggleMusic() { 
+            if(isPlaying) { player.pause(); document.getElementById('music-indicator').classList.add('paused'); document.getElementById('play-btn').innerHTML='<i class="fa-solid fa-play ml-1"></i>'; }
+            else { if(!player.src) player.src=window.APP_DATA.playlist[0].url; player.play().catch(e=>console.log(e)); document.getElementById('music-indicator').classList.remove('paused'); document.getElementById('play-btn').innerHTML='<i class="fa-solid fa-pause"></i>'; }
+            isPlaying=!isPlaying; 
+        }
+        function nextSong() { trackIdx=(trackIdx+1)%window.APP_DATA.playlist.length; player.src=window.APP_DATA.playlist[trackIdx].url; if(isPlaying) player.play(); document.getElementById('song-title').textContent=window.APP_DATA.playlist[trackIdx].title; }
+        function prevSong() { trackIdx=(trackIdx-1+window.APP_DATA.playlist.length)%window.APP_DATA.playlist.length; player.src=window.APP_DATA.playlist[trackIdx].url; if(isPlaying) player.play(); document.getElementById('song-title').textContent=window.APP_DATA.playlist[trackIdx].title; }
+
+        function openCertDataModal() { document.getElementById('cert-data-modal').classList.remove('hidden'); document.getElementById('cert-data-modal').classList.add('flex'); }
+        function generateCert() {
+            const data = { name: document.getElementById('teacher-name').value, mapel: document.getElementById('teacher-subject').value, year: document.getElementById('teacher-year').value, sem: document.getElementById('teacher-sem').value, nip: document.getElementById('cert-nip').value, kepsek: document.getElementById('cert-kepsek').value };
+            if(!data.name || !data.nip) { alert("Lengkapi data!"); return; }
+            closeModal('cert-data-modal'); document.getElementById('cert-preview-modal').classList.remove('hidden'); document.getElementById('cert-preview-modal').classList.add('flex');
+            
+            const canvas=document.getElementById('cert-canvas'); const ctx=canvas.getContext('2d');
+            ctx.fillStyle="#fff"; ctx.fillRect(0,0,1000,700); ctx.lineWidth=20; ctx.strokeStyle="#312e81"; ctx.strokeRect(20,20,960,660); ctx.lineWidth=4; ctx.strokeStyle="#fbbf24"; ctx.strokeRect(40,40,920,620);
+            ctx.textAlign="center"; ctx.fillStyle="#312e81"; ctx.font="bold 40px 'Times New Roman'"; ctx.fillText("SERTIFIKAT VALIDASI", 500, 130);
+            ctx.font="italic 20px Arial"; ctx.fillStyle="#64748b"; ctx.fillText(window.APP_DATA.schoolName, 500, 170);
+            ctx.fillStyle="#1e293b"; ctx.font="22px Arial"; ctx.fillText("Diberikan kepada:", 500, 240);
+            ctx.fillStyle="#0f172a"; ctx.font="bold 45px 'Outfit'"; ctx.fillText(data.name, 500, 300);
+            ctx.fillStyle="#475569"; ctx.font="18px Arial"; ctx.fillText(`NIP. ${data.nip}`, 500, 335);
+            ctx.beginPath(); ctx.moveTo(300, 360); ctx.lineTo(700, 360); ctx.strokeStyle="#cbd5e1"; ctx.lineWidth=2; ctx.stroke();
+            ctx.fillStyle="#15803d"; ctx.font="bold 26px Arial"; ctx.fillText("TELAH MENYELESAIKAN 8 INSTRUMEN ADMINISTRASI", 500, 410);
+            ctx.fillStyle="#475569"; ctx.font="18px Arial"; ctx.fillText(`Tahun Ajaran ${data.year} - Semester ${data.sem}`, 500, 440);
+            const d=new Date(); ctx.fillStyle="#334155"; ctx.font="16px Arial"; ctx.fillText(`Purworejo, ${d.getDate()} ${d.toLocaleString('default',{month:'long'})} ${d.getFullYear()}`, 750, 520);
+            ctx.fillText("Kepala Sekolah", 750, 550); ctx.fillStyle="#0f172a"; ctx.font="bold 20px Arial"; ctx.fillText(data.kepsek, 750, 620); ctx.font="14px Arial"; ctx.fillText("NIP. ...........................", 750, 640);
+            ctx.save(); ctx.translate(680, 580); ctx.rotate(-15*Math.PI/180); ctx.beginPath(); ctx.arc(0,0,55,0,Math.PI*2); ctx.strokeStyle="rgba(30, 58, 138, 0.6)"; ctx.lineWidth=4; ctx.stroke(); ctx.fillStyle="rgba(30, 58, 138, 0.6)"; ctx.font="bold 12px Arial"; ctx.fillText("VALIDASI", 0, -8); ctx.fillText("2025", 0, 12); ctx.restore();
+        }
+        function downloadCertImage() { const l=document.createElement('a'); l.download='Sertifikat.png'; l.href=document.getElementById('cert-canvas').toDataURL(); l.click(); }
+    </script>
+</body>
+</html>
